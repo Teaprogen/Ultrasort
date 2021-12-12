@@ -2,7 +2,7 @@ import os
 import shutil
 from tkinter import *
 from tkinter import filedialog
-import tkinter.ttk as ttk
+from tkinter import ttk
 
 
 def getFolderPath():
@@ -59,6 +59,7 @@ def sortFileType():
                 os.makedirs(local_path + '/' + ext)
                 shutil.move(local_path + '/' + file_,
                             local_path + '/' + ext + '/' + file_)
+    msgWorkDone()
 
 
 def deleteEmptyFolders():
@@ -69,31 +70,51 @@ def deleteEmptyFolders():
         if len(os.listdir(local_path)) == 0:
             print("removed " + local_path)
             os.rmdir(local_path)
+    msgWorkDone()
+
+
+def msgWorkDone():
+    global pop
+    pop = Toplevel(root)
+    pop.title("Done!")
+    popWindowSize = "200x100"
+    pop.geometry(popWindowSize + '+{}+{}'.format(int(root.winfo_screenwidth()/2) - 200, int(root.winfo_screenheight()/2)-200))
+    pop.resizable(False, False)
+    pop.config(bg="#1e1e1e")
+    pop.grid_columnconfigure(0, weight=1)
+
+    lblMsg = Label(pop, text="Work done!", font=("Arial", 25), bg="#1e1e1e", fg="#ffffff")
+    lblMsg.grid(row=0, column=0)
+
+    btnMsg = Button(pop, text="OK", command=pop.destroy, font=("Arial", 15), activeforeground="#f0f0f0", activebackground="#444444", bg="#333333", fg="#ffffff")
+    btnMsg.grid(row=1)
 
 
 root = Tk()
-root.geometry('400x140+{}+{}'.format(int(root.winfo_screenwidth()/2) -
-              200, int(root.winfo_screenheight()/2)-200))
+rootWindowSize = '400x150'
+root.geometry(rootWindowSize+'+{}+{}'.format(int(root.winfo_screenwidth() / 2) - 200, int(root.winfo_screenheight() / 2) - 200))
 root.title("ULTRASORT")
 root.resizable(False, False)
+root.configure(bg='#1e1e1e')
+
 # root.iconbitmap(default='icon1.ico')
 
 
 folder_path = StringVar()
 
-lbl1 = ttk.Label(root, text="Directory")
-lbl1.grid(row=0, column=0, sticky=W)
+lblHint = Label(root, text="Directory:", font=("Arial", 13), bg="#1e1e1e", fg="#ffffff")
+lblHint.grid(row=0, column=0, sticky=W, )
 
-lbl2 = ttk.Label(master=root, textvariable=folder_path)
-lbl2.grid(row=1, column=0, columnspan=2)
+lblDirectory = Label(root, textvariable=folder_path, font=("Arial", 13), bg="#1e1e1e", fg="#ffffff")
+lblDirectory.grid(row=1, column=0, columnspan=1)
 
-btnFind = ttk.Button(text="Browse Folder", command=getFolderPath)
+btnFind = Button(root, text="Browse Folder", font=("Arial", 13), activeforeground="#f0f0f0", activebackground="#444444", command=getFolderPath, bg="#333333", fg="#ffffff")
 btnFind.grid(row=2, column=0, sticky=W)
 
-btnSort = ttk.Button(text="Sort files by type", command=sortFileType)
+btnSort = Button(root, text="Sort files by type", font=("Arial", 13), activeforeground="#f0f0f0", activebackground="#444444", command=sortFileType, bg="#333333", fg="#ffffff")
 btnSort.grid(row=3, column=0, sticky=W)
 
-btnDelete = ttk.Button(text="Delete empty folders", command=deleteEmptyFolders)
+btnDelete = Button(root, text="Delete empty folders", font=("Arial", 13), activeforeground="#f0f0f0", activebackground="#444444", command=deleteEmptyFolders, bg="#333333", fg="#ffffff")
 btnDelete.grid(row=4, column=0, sticky=W)
 
 root.mainloop()
