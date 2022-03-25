@@ -12,10 +12,13 @@ def getFolderPath():
     global folder_path
     filename = filedialog.askdirectory()
     folder_path.set(filename)
-    print(filename)
+    # print(filename)
 
 
 def sortFileType():
+
+    moveProgressBar()
+    
     local_path = folder_path.get()
 
     # creating of list_ to check for errors
@@ -30,8 +33,8 @@ def sortFileType():
             list_ = os.listdir(local_path)
         except OSError as error:
             local_path = local_path[1:]
-            print("Warning: File folder_path was intruded with double u202a")
-        print("Warning: File folder_path was intruded with u202a")
+            #print("Warning: File folder_path was intruded with double u202a")
+        #print("Warning: File folder_path was intruded with u202a")
 
     for file_ in list_:
         name, ext = os.path.splitext(file_)
@@ -59,16 +62,22 @@ def sortFileType():
                 os.makedirs(local_path + '/' + ext)
                 shutil.move(local_path + '/' + file_,
                             local_path + '/' + ext + '/' + file_)
+
+    stopProgressBar()
     msgWorkDone()
 
 
 def deleteEmptyFolders():
+    moveProgressBar()
     local_path = folder_path.get()
     walk = list(os.walk(local_path))
+
     for local_path, _, _ in walk[::-1]:
         if len(os.listdir(local_path)) == 0:
-            print("removed " + local_path)
+            #print("removed " + local_path)
             os.rmdir(local_path)
+
+    stopProgressBar()
     msgWorkDone()
 
 
@@ -94,13 +103,25 @@ def msgWorkDone():
     btnMsg = Button(pop,
                     text="OK",
                     command=popDestroy,
-                    font=("Arial", 15), activeforeground="#f0f0f0", activebackground="#444444", bg="#333333", fg="#ffffff")
+                    font=("Arial", 15),
+                         activeforeground="#f0f0f0",
+                         activebackground="#444444",
+                         bg="#333333",
+                         fg="#ffffff")
     btnMsg.grid(row=1)
 
 
 def popDestroy():
     pop.grab_release()
     pop.destroy()
+
+
+def moveProgressBar():
+    prgrsBar.start()
+
+
+def stopProgressBar():
+    prgrsBar.stop()
 
 
 root = Tk()
@@ -161,5 +182,10 @@ btnDelete = Button(root,
                    fg="#ffffff",
                    width=17)
 btnDelete.grid(row=4, column=0, sticky=W+E)
+
+prgrsBar = ttk.Progressbar(root, orient='horizontal',
+                           length=300, mode='indeterminate')
+prgrsBar.grid(row=5, column=0, sticky=W+E)
+
 
 root.mainloop()
