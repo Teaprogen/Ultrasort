@@ -17,8 +17,6 @@ def getFolderPath():
 
 def sortFileType():
 
-    moveProgressBar()
-    
     local_path = folder_path.get()
 
     # creating of list_ to check for errors
@@ -35,6 +33,8 @@ def sortFileType():
             local_path = local_path[1:]
             #print("Warning: File folder_path was intruded with double u202a")
         #print("Warning: File folder_path was intruded with u202a")
+
+    lenfhtOfList = len(list_)
 
     for file_ in list_:
         name, ext = os.path.splitext(file_)
@@ -62,20 +62,22 @@ def sortFileType():
                 os.makedirs(local_path + '/' + ext)
                 shutil.move(local_path + '/' + file_,
                             local_path + '/' + ext + '/' + file_)
+        moveProgressBar(lenfhtOfList)
 
     stopProgressBar()
     msgWorkDone()
 
 
 def deleteEmptyFolders():
-    moveProgressBar()
     local_path = folder_path.get()
     walk = list(os.walk(local_path))
+    lengthOfList = len(walk)
 
     for local_path, _, _ in walk[::-1]:
         if len(os.listdir(local_path)) == 0:
             #print("removed " + local_path)
             os.rmdir(local_path)
+        moveProgressBar(lengthOfList)
 
     stopProgressBar()
     msgWorkDone()
@@ -116,8 +118,11 @@ def popDestroy():
     pop.destroy()
 
 
-def moveProgressBar():
-    prgrsBar.start()
+def moveProgressBar(size):
+    if prgrsBar['value'] < 100:
+        prgrsBar['value'] += size/100
+    else:
+        return
 
 
 def stopProgressBar():
@@ -140,8 +145,9 @@ lblHint = Label(root,
                 text="Directory:",
                 font=("Arial", 13),
                 bg="#1e1e1e",
-                fg="#ffffff",)
-lblHint.grid(row=0, column=0, sticky=W, )
+                fg="#ffffff",
+                padx=170)
+lblHint.grid(row=0, column=0, sticky=W)
 
 lblDirectory = Label(root,
                      textvariable=folder_path,
@@ -156,7 +162,7 @@ btnFind = Button(root,
                  activeforeground="#f0f0f0",
                  activebackground="#444444",
                  command=getFolderPath,
-                 bg="#333333",
+                 bg="#1e1e1e",
                  fg="#ffffff",
                  width=17)
 btnFind.grid(row=2, column=0, sticky=W+E)
@@ -167,7 +173,7 @@ btnSort = Button(root,
                  activeforeground="#f0f0f0",
                  activebackground="#444444",
                  command=sortFileType,
-                 bg="#333333",
+                 bg="#1e1e1e",
                  fg="#ffffff",
                  width=17)
 btnSort.grid(row=3, column=0, sticky=W+E)
@@ -178,13 +184,13 @@ btnDelete = Button(root,
                    activeforeground="#f0f0f0",
                    activebackground="#444444",
                    command=deleteEmptyFolders,
-                   bg="#333333",
+                   bg="#1e1e1e",
                    fg="#ffffff",
                    width=17)
 btnDelete.grid(row=4, column=0, sticky=W+E)
 
 prgrsBar = ttk.Progressbar(root, orient='horizontal',
-                           length=300, mode='indeterminate')
+                           length=300, mode='determinate')
 prgrsBar.grid(row=5, column=0, sticky=W+E)
 
 
