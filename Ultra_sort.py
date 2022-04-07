@@ -136,7 +136,7 @@ root.geometry(rootWindowSize+'+{}+{}'.format(int(root.winfo_screenwidth() /
 root.title("ULTRASORT")
 root.resizable(False, False)
 root.configure(bg='#1e1e1e')
-root.iconphoto(True, tkinter.PhotoImage(file='icon.png'))
+#root.iconphoto(True, tkinter.PhotoImage(file='icon.png'))
 
 
 folder_path = StringVar()
