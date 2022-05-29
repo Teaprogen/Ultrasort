@@ -3,7 +3,12 @@ import shutil
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
-import tkinter
+import tkinter as tk
+
+VIDEO_EXT = ['mp4', 'webm', 'webm']
+AUDIO_EXT = ['mp3', 'wav', 'flac']
+PHOTO_EXT = ['png', 'jpg', 'jpeg', 'gif', 'bmp']
+DOC_EXT = ['pdf', 'rar', 'doc', 'docx', 'pptx', 'txt']
 
 
 def getFolderPath():
@@ -12,10 +17,21 @@ def getFolderPath():
     global folder_path
     filename = filedialog.askdirectory()
     folder_path.set(filename)
-    # print(filename)
 
 
-def sortFileType():
+def deleteEmptyFolders():
+    local_path = folder_path.get()
+    walk = list(os.walk(local_path))
+    lengthOfList = len(walk)
+
+    for local_path, _, _ in walk[::-1]:
+        if len(os.listdir(local_path)) == 0:
+            os.rmdir(local_path)
+
+    msgWorkDone()
+
+
+def sortFileByExtension():
 
     local_path = folder_path.get()
 
@@ -33,8 +49,6 @@ def sortFileType():
             local_path = local_path[1:]
             #print("Warning: File folder_path was intruded with double u202a")
         #print("Warning: File folder_path was intruded with u202a")
-
-    lenfhtOfList = len(list_)
 
     for file_ in list_:
         name, ext = os.path.splitext(file_)
@@ -62,34 +76,80 @@ def sortFileType():
                 os.makedirs(local_path + '/' + ext)
                 shutil.move(local_path + '/' + file_,
                             local_path + '/' + ext + '/' + file_)
-        moveProgressBar(lenfhtOfList)
 
-    stopProgressBar()
     msgWorkDone()
 
 
-def deleteEmptyFolders():
+def sortFilesByType():
     local_path = folder_path.get()
-    walk = list(os.walk(local_path))
-    lengthOfList = len(walk)
 
-    for local_path, _, _ in walk[::-1]:
-        if len(os.listdir(local_path)) == 0:
-            #print("removed " + local_path)
-            os.rmdir(local_path)
-        moveProgressBar(lengthOfList)
+    list_ = "none"
 
-    stopProgressBar()
+    try:
+        list_ = os.listdir(local_path)
+    except OSError as error:
+        local_path = local_path[1:]
+        try:
+            list_ = os.listdir(local_path)
+        except OSError as error:
+            local_path = local_path[1:]
+    # Create folders to move files
+    if not (os.path.exists(local_path + '/Pictures')):
+        os.makedirs(local_path + '/Pictures')
+
+    if not (os.path.exists(local_path + '/Video')):
+        os.makedirs(local_path + '/Video')
+
+    if not (os.path.exists(local_path + '/Documents')):
+        os.makedirs(local_path + '/Documents')
+
+    if not (os.path.exists(local_path + '/Audio')):
+        os.makedirs(local_path + '/Audio')
+
+    for file_ in list_:
+        name, ext = os.path.splitext(file_)
+
+        # This is going to store the extension type
+        ext = ext[1:]
+
+        # avoids desktop.ini file because it's requires administrator rights to move it
+        if name != "desktop" and ext != "ini":
+
+            # This forces the next iteration,
+            # if it is the directory
+            if ext == '':
+                continue
+
+            # This will create a new directory,
+            # if the directory does not already exist
+
+            if ext in PHOTO_EXT:
+                shutil.move(local_path + '/' + file_,
+                            local_path + '/' + 'Pictures' + '/' + file_)
+
+            if ext in VIDEO_EXT:
+                shutil.move(local_path + '/' + file_,
+                            local_path + '/' + 'Video' + '/' + file_)
+
+            if ext in DOC_EXT:
+                shutil.move(local_path + '/' + file_,
+                            local_path + '/' + 'Documents' + '/' + file_)
+
+            if ext in AUDIO_EXT:
+                shutil.move(local_path + '/' + file_,
+                            local_path + '/' + 'Audio' + '/' + file_)
     msgWorkDone()
 
 
 def msgWorkDone():
+    if folder_path == None:
+        return
     global pop
     pop = Toplevel(root)
     pop.title("Done!")
-    popWindowSize = "200x100"
-    pop.geometry(popWindowSize + '+{}+{}'.format(int(root.winfo_screenwidth() /
-                 2) - 200, int(root.winfo_screenheight()/2)-200))
+    popWindowSize = "300x100"
+    pop.geometry(popWindowSize + '+{}+{}'.format(int(root.winfo_screenwidth() / 2) - 150,
+                                                 int(root.winfo_screenheight() / 2) - 50))
     pop.resizable(False, False)
     pop.config(bg="#1e1e1e")
     pop.grid_columnconfigure(0, weight=1)
@@ -118,43 +178,33 @@ def popDestroy():
     pop.destroy()
 
 
-def moveProgressBar(size):
-    if prgrsBar['value'] < 100:
-        prgrsBar['value'] += size/100
-    else:
-        return
-
-
-def stopProgressBar():
-    prgrsBar.stop()
-
-
 root = Tk()
-rootWindowSize = '400x150'
-root.geometry(rootWindowSize+'+{}+{}'.format(int(root.winfo_screenwidth() /
-              2) - 200, int(root.winfo_screenheight() / 2) - 200))
+rootWindowSize = '559x148'
+root.geometry(rootWindowSize+'+{}+{}'.format(int(root.winfo_screenwidth() / 2) - 279,
+                                             int(root.winfo_screenheight() / 2) - 74))
 root.title("ULTRASORT")
 root.resizable(False, False)
 root.configure(bg='#1e1e1e')
-#root.iconphoto(True, tkinter.PhotoImage(file='icon.png'))
+root.iconphoto(True, tk.PhotoImage(file='icon.png'))
 
 
 folder_path = StringVar()
 
 lblHint = Label(root,
-                text="Directory:",
+                text="Directory",
                 font=("Arial", 13),
                 bg="#1e1e1e",
                 fg="#ffffff",
-                padx=170)
-lblHint.grid(row=0, column=0, sticky=W)
+                )
+lblHint.grid(row=0, column=0, sticky='NW')
 
 lblDirectory = Label(root,
                      textvariable=folder_path,
                      font=("Arial", 13),
                      bg="#1e1e1e",
-                     fg="#ffffff")
-lblDirectory.grid(row=1, column=0, columnspan=2)
+                     fg="#ffffff",
+                     )
+lblDirectory.grid(row=1, column=0, sticky='NW')
 
 btnFind = Button(root,
                  text="Browse Folder",
@@ -164,19 +214,19 @@ btnFind = Button(root,
                  command=getFolderPath,
                  bg="#1e1e1e",
                  fg="#ffffff",
-                 width=17)
-btnFind.grid(row=2, column=0, sticky=W+E)
+                 width=30)
+btnFind.grid(row=2, column=0, sticky='NW')
 
 btnSort = Button(root,
-                 text="Sort files by type",
+                 text="Sort files by extension in subfolders",
                  font=("Arial", 13),
                  activeforeground="#f0f0f0",
                  activebackground="#444444",
-                 command=sortFileType,
+                 command=sortFileByExtension,
                  bg="#1e1e1e",
                  fg="#ffffff",
-                 width=17)
-btnSort.grid(row=3, column=0, sticky=W+E)
+                 width=30)
+btnSort.grid(row=3, column=0, sticky='NW')
 
 btnDelete = Button(root,
                    text="Delete empty folders",
@@ -186,12 +236,39 @@ btnDelete = Button(root,
                    command=deleteEmptyFolders,
                    bg="#1e1e1e",
                    fg="#ffffff",
-                   width=17)
-btnDelete.grid(row=4, column=0, sticky=W+E)
+                   width=30)
+btnDelete.grid(row=4, column=0, sticky='NW')
 
-prgrsBar = ttk.Progressbar(root, orient='horizontal',
-                           length=300, mode='determinate')
-prgrsBar.grid(row=5, column=0, sticky=W+E)
+btnNew = Button(root,
+                text="Test_Button",
+                font=("Arial", 13),
+                activeforeground="#f0f0f0",
+                activebackground="#444444",
+                bg="#1e1e1e",
+                fg="#ffffff",
+                width=30)
+btnNew.grid(row=4, column=1, sticky='NW')
+
+btnNew1 = Button(root,
+                 text="Test_Button1",
+                 font=("Arial", 13),
+                 activeforeground="#f0f0f0",
+                 activebackground="#444444",
+                 bg="#1e1e1e",
+                 fg="#ffffff",
+                 width=30)
+btnNew1.grid(row=3, column=1, sticky='NW')
+
+btnNew2 = Button(root,
+                 command=sortFilesByType,
+                 text="Sort files by type of file",
+                 font=("Arial", 13),
+                 activeforeground="#f0f0f0",
+                 activebackground="#444444",
+                 bg="#1e1e1e",
+                 fg="#ffffff",
+                 width=30)
+btnNew2.grid(row=2, column=1, sticky='NW')
 
 
 root.mainloop()
