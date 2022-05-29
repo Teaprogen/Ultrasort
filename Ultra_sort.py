@@ -91,25 +91,18 @@ def msgWorkDone():
     pop.geometry(popWindowSize + '+{}+{}'.format(int(root.winfo_screenwidth() /
                  2) - 200, int(root.winfo_screenheight()/2)-200))
     pop.resizable(False, False)
-    pop.config(bg="#1e1e1e")
     pop.grid_columnconfigure(0, weight=1)
     pop.grab_set()
 
     lblMsg = Label(pop,
                    text="Work done!",
-                   font=("Arial", 25),
-                   bg="#1e1e1e",
-                   fg="#ffffff")
+                   font=("Arial", 25))
     lblMsg.grid(row=0, column=0)
 
     btnMsg = Button(pop,
                     text="OK",
                     command=popDestroy,
-                    font=("Arial", 15),
-                         activeforeground="#f0f0f0",
-                         activebackground="#444444",
-                         bg="#333333",
-                         fg="#ffffff")
+                    font=("Arial", 15))
     btnMsg.grid(row=1)
 
 
@@ -135,7 +128,6 @@ root.geometry(rootWindowSize+'+{}+{}'.format(int(root.winfo_screenwidth() /
               2) - 200, int(root.winfo_screenheight() / 2) - 200))
 root.title("ULTRASORT")
 root.resizable(False, False)
-root.configure(bg='#1e1e1e')
 #root.iconphoto(True, tkinter.PhotoImage(file='icon.png'))
 
 
@@ -144,48 +136,32 @@ folder_path = StringVar()
 lblHint = Label(root,
                 text="Directory:",
                 font=("Arial", 13),
-                bg="#1e1e1e",
-                fg="#ffffff",
                 padx=170)
 lblHint.grid(row=0, column=0, sticky=W)
 
 lblDirectory = Label(root,
                      textvariable=folder_path,
-                     font=("Arial", 13),
-                     bg="#1e1e1e",
-                     fg="#ffffff")
+                     font=("Arial", 13),)
 lblDirectory.grid(row=1, column=0, columnspan=2)
 
 btnFind = Button(root,
                  text="Browse Folder",
                  font=("Arial", 13),
-                 activeforeground="#f0f0f0",
-                 activebackground="#444444",
                  command=getFolderPath,
-                 bg="#1e1e1e",
-                 fg="#ffffff",
                  width=17)
 btnFind.grid(row=2, column=0, sticky=W+E)
 
 btnSort = Button(root,
                  text="Sort files by type",
                  font=("Arial", 13),
-                 activeforeground="#f0f0f0",
-                 activebackground="#444444",
                  command=sortFileType,
-                 bg="#1e1e1e",
-                 fg="#ffffff",
                  width=17)
 btnSort.grid(row=3, column=0, sticky=W+E)
 
 btnDelete = Button(root,
                    text="Delete empty folders",
                    font=("Arial", 13),
-                   activeforeground="#f0f0f0",
-                   activebackground="#444444",
                    command=deleteEmptyFolders,
-                   bg="#1e1e1e",
-                   fg="#ffffff",
                    width=17)
 btnDelete.grid(row=4, column=0, sticky=W+E)
 
