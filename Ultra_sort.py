@@ -63,7 +63,7 @@ def sortFileByExtension():
     # creating of list_ to check for errors
     list_of_files = "none"
 
-    # path of directory that going to be sorted and creating of list_ to check for errors
+    # Delete Windows invisible symbols
     try:
         list_of_files = os.listdir(local_path)
     except OSError as error:
@@ -72,8 +72,6 @@ def sortFileByExtension():
             list_of_files = os.listdir(local_path)
         except OSError as error:
             local_path = local_path[1:]
-            #print("Warning: File folder_path was intruded with double u202a")
-        #print("Warning: File folder_path was intruded with u202a")
 
     for file_name in list_of_files:
         name, ext = os.path.splitext(file_name)
