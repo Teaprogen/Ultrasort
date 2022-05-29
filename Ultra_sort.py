@@ -5,10 +5,35 @@ from tkinter import filedialog
 from tkinter import ttk
 import tkinter as tk
 
+IMAGE_EXT = ['png', 'jpg', 'jpeg', 'gif', 'bmp',
+             'ai', 'psd', 'tif', 'tiff', 'ico', 'svg']
+
 VIDEO_EXT = ['mp4', 'webm', 'webm']
-AUDIO_EXT = ['mp3', 'wav', 'flac']
-PHOTO_EXT = ['png', 'jpg', 'jpeg', 'gif', 'bmp']
-DOC_EXT = ['pdf', 'rar', 'doc', 'docx', 'pptx', 'txt']
+
+DOCUMENT_EXT = ['pdf', 'doc', 'docx',
+                'pptx', 'txt', 'ppt', 'odp', 'key', ]
+
+AUDIO_EXT = ['mp3', 'wav', 'flac', 'aif',
+             'cda', 'mid', 'mpa', 'ogg', 'wma', 'wpl']
+
+COMPRESSED_EXT = ['rar', 'tar', 'zip', '7z', 'pkg', 'z']
+
+FONT_EXT = ['fnt', 'fon', 'otf', 'ttf']
+
+INTERNET_EXT = ['html', 'css']
+
+DATA_EXT = ['csv', 'dat', 'db', 'dbf', 'log',
+            'mdb', 'sav', 'sql', 'xml', 'json']
+
+EXECUTABLE_EXT = ['exe', 'bat', 'bin', 'com', 'jar', 'msi', 'wsf']
+
+TYPE_LIST = [IMAGE_EXT, VIDEO_EXT, DOCUMENT_EXT,
+             AUDIO_EXT, COMPRESSED_EXT, FONT_EXT,
+             INTERNET_EXT, DATA_EXT, EXECUTABLE_EXT]
+
+TYPE_LIST_NAME = ['Images', 'Videos', 'Documents',
+                  'Audio', 'Archives', 'Fonts',
+                  'Internet files', 'Data files', 'Executable files']
 
 
 def getFolderPath():
@@ -36,22 +61,22 @@ def sortFileByExtension():
     local_path = folder_path.get()
 
     # creating of list_ to check for errors
-    list_ = "none"
+    list_of_files = "none"
 
     # path of directory that going to be sorted and creating of list_ to check for errors
     try:
-        list_ = os.listdir(local_path)
+        list_of_files = os.listdir(local_path)
     except OSError as error:
         local_path = local_path[1:]
         try:
-            list_ = os.listdir(local_path)
+            list_of_files = os.listdir(local_path)
         except OSError as error:
             local_path = local_path[1:]
             #print("Warning: File folder_path was intruded with double u202a")
         #print("Warning: File folder_path was intruded with u202a")
 
-    for file_ in list_:
-        name, ext = os.path.splitext(file_)
+    for file_name in list_of_files:
+        name, ext = os.path.splitext(file_name)
 
         # This is going to store the extension type
         ext = ext[1:]
@@ -67,47 +92,42 @@ def sortFileByExtension():
             # This will move the file to the directory
             # where the name 'ext' already exists
             if os.path.exists(local_path + '/' + ext):
-                shutil.move(local_path + '/' + file_,
-                            local_path + '/' + ext + '/' + file_)
+                shutil.move(local_path + '/' + file_name,
+                            local_path + '/' + ext + '/' + file_name)
 
             # This will create a new directory,
             # if the directory does not already exist
             else:
                 os.makedirs(local_path + '/' + ext)
-                shutil.move(local_path + '/' + file_,
-                            local_path + '/' + ext + '/' + file_)
+                shutil.move(local_path + '/' + file_name,
+                            local_path + '/' + ext + '/' + file_name)
 
     msgWorkDone()
 
-
 def sortFilesByType():
+
     local_path = folder_path.get()
 
-    list_ = "none"
+    list_of_files = ""
 
+    # Delete Windows invisible symbols
     try:
-        list_ = os.listdir(local_path)
+        list_of_files = os.listdir(local_path)
     except OSError as error:
         local_path = local_path[1:]
         try:
-            list_ = os.listdir(local_path)
+            list_of_files = os.listdir(local_path)
         except OSError as error:
             local_path = local_path[1:]
+
     # Create folders to move files
-    if not (os.path.exists(local_path + '/Pictures')):
-        os.makedirs(local_path + '/Pictures')
+    for folderName in TYPE_LIST_NAME:
+        if not (os.path.exists(local_path + '/' + folderName)):
+            os.makedirs(local_path + '/' + folderName)
 
-    if not (os.path.exists(local_path + '/Video')):
-        os.makedirs(local_path + '/Video')
-
-    if not (os.path.exists(local_path + '/Documents')):
-        os.makedirs(local_path + '/Documents')
-
-    if not (os.path.exists(local_path + '/Audio')):
-        os.makedirs(local_path + '/Audio')
-
-    for file_ in list_:
-        name, ext = os.path.splitext(file_)
+    # Sorting files in folders
+    for file_name in list_of_files:
+        name, ext = os.path.splitext(file_name)
 
         # This is going to store the extension type
         ext = ext[1:]
@@ -120,24 +140,13 @@ def sortFilesByType():
             if ext == '':
                 continue
 
-            # This will create a new directory,
-            # if the directory does not already exist
+            # Moving files in subfolder
+            for item in TYPE_LIST:
+                index = TYPE_LIST_NAME[TYPE_LIST.index(item)]
+                if ext in item:
+                    shutil.move(local_path + '/' + file_name,
+                                local_path + '/' + index + '/' + file_name)
 
-            if ext in PHOTO_EXT:
-                shutil.move(local_path + '/' + file_,
-                            local_path + '/' + 'Pictures' + '/' + file_)
-
-            if ext in VIDEO_EXT:
-                shutil.move(local_path + '/' + file_,
-                            local_path + '/' + 'Video' + '/' + file_)
-
-            if ext in DOC_EXT:
-                shutil.move(local_path + '/' + file_,
-                            local_path + '/' + 'Documents' + '/' + file_)
-
-            if ext in AUDIO_EXT:
-                shutil.move(local_path + '/' + file_,
-                            local_path + '/' + 'Audio' + '/' + file_)
     msgWorkDone()
 
 
