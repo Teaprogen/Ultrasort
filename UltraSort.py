@@ -167,7 +167,7 @@ class UltraSort():
                     if ext in type_item or (name in type_item and ext == ''):
                         shutil.move(local_path + '/' + file_name,
                                     local_path + '/' + subFolderType + '/' + file_name)
-        msgWorkDone()
+        self.deleteEmptyFolders()
 
 
 def msgWorkDone():
@@ -230,7 +230,7 @@ if __name__ == "__main__":
     root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
     root.title("ULTRASORT")
     root.resizable(False, False)
-    root.iconphoto(True, PhotoImage(file=resource_path('icon.png')))
+    #root.iconphoto(True, PhotoImage(file=resource_path('icon.png')))
 
     lblHint = Label(root,
                     text="Directory: None, select one.",
