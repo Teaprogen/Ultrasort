@@ -2,7 +2,8 @@
 import os
 import shutil
 import sys
-from tkinter import Button, Label, PhotoImage, Tk, Toplevel, filedialog, Tk
+from tkinter import Button, Label, Tk, Toplevel, filedialog, ttk
+
 IMAGE_EXT = ['webp', 'PNG', 'HEIC', 'png', 'jpg', 'jpeg', 'gif',
              'bmp', 'ai', 'psd', 'tif', 'tiff', 'ico', 'svg', 'JPG']
 
@@ -175,24 +176,24 @@ def msgWorkDone():
         return
     global pop
     pop = Toplevel(root)
+    pop.tk.call("set_theme", "light")
     pop.title("Done!")
-    popWindowSize = "300x100"
-    pop.geometry(popWindowSize + '+{}+{}'.format(int(root.winfo_screenwidth() / 2) - 150,
-                                                 int(root.winfo_screenheight() / 2) - 50))
     pop.resizable(False, False)
     pop.grid_columnconfigure(0, weight=1)
     pop.grab_set()
 
-    lblMsg = Label(pop,
-                   text="Work done!",
-                   font=("Arial", 25))
-    lblMsg.grid(row=0, column=0)
+    lblMsg = ttk.Label(pop,
+                   text="Work done!")
+    lblMsg.grid(row=0,
+                padx=10,
+                pady=(10, 0))
 
-    btnMsg = Button(pop,
+    btnMsg = ttk.Button(pop,
                     text="OK",
-                    command=popDestroy,
-                    font=("Arial", 15))
-    btnMsg.grid(row=1)
+                    command=popDestroy)
+    btnMsg.grid(row=1,
+                padx=10,
+                pady=(10, 10))
 
 
 def popDestroy():
@@ -215,55 +216,65 @@ if __name__ == "__main__":
 
     ent = UltraSort()
     root = Tk()
-    window_width = 590
-    window_height = 130
+    root.tk.call("source", resource_path("azure.tcl"))
+    root.tk.call("set_theme", "light")
 
     # get the screen dimension
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
 
-    # find the center point
-    center_x = int(screen_width/2 - window_width / 2)
-    center_y = int(screen_height/2 - window_height / 2)
-
-    # set the position of the window to the center of the screen
-    root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
     root.title("ULTRASORT")
     root.resizable(False, False)
     #root.iconphoto(True, PhotoImage(file=resource_path('icon.png')))
+    
 
-    lblHint = Label(root,
-                    text="Directory: None, select one.",
-                    font=("Arial", 13))
-    lblHint.grid(row=0, column=0, sticky="NSEW",
-                 padx=10, pady=(10, 0), columnspan=2)
+    lblHint = ttk.Label(root,
+                        text="Directory: None, select one.")
+    lblHint.grid(row=0,
+                 column=0,
+                 sticky="NSEW",
+                 padx=10,
+                 pady=[10, 10],
+                 columnspan=2)
 
-    btnFind = Button(root,
-                     text="Browse Folder",
-                     command=ent.getFolderPath,
-                     font=("Arial", 13),
-                     width=30)
-    btnFind.grid(row=2, column=0, sticky="NSEW", padx=10, pady=10)
+    btnFind = ttk.Button(root,
+                         text="Browse Folder",
+                         command=ent.getFolderPath,
+                         width=30)
+    btnFind.grid(row=2,
+                 column=0,
+                 sticky="NSEW",
+                 padx=[10, 10],
+                 pady=[0, 10])
 
-    btnSort = Button(root,
-                     text="Sort files by extension in subfolders",
-                     command=ent.sortFileByExtension,
-                     font=("Arial", 13),
-                     width=30)
-    btnSort.grid(row=3, column=0, sticky="NSEW", padx=10)
+    btnSort = ttk.Button(root,
+                         text="Sort files by extension in subfolders",
+                         command=ent.sortFileByExtension,
+                         width=30)
+    btnSort.grid(row=3,
+                 column=0,
+                 sticky="NSEW",
+                 padx=[10, 10],
+                 pady=[0, 10])
 
-    btnDelete = Button(root,
-                       text="Delete empty folders",
-                       command=ent.deleteEmptyFolders,
-                       font=("Arial", 13),
-                       width=30)
-    btnDelete.grid(row=2, column=1, sticky="NSEW", pady=10)
+    btnDelete = ttk.Button(root,
+                           text="Delete empty folders",
+                           command=ent.deleteEmptyFolders,
+                           width=30)
+    btnDelete.grid(row=2,
+                   column=1,
+                   sticky="NSEW",
+                   padx=[0, 10],
+                   pady=[0, 10])
 
-    btnSort1 = Button(root,
-                      command=ent.sortFilesByType,
-                      text="Sort files by type of file",
-                      font=("Arial", 13),
-                      width=30)
-    btnSort1.grid(row=3, column=1, sticky="NSEW")
+    btnSort1 = ttk.Button(root,
+                          command=ent.sortFilesByType,
+                          text="Sort files by type of file",
+                          width=30)
+    btnSort1.grid(row=3,
+                  column=1,
+                  sticky="NSEW",
+                  padx=[0, 10],
+                  pady=[0, 10])
 
     root.mainloop()
