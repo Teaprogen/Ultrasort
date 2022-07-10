@@ -1,8 +1,7 @@
 
 import os
 import shutil
-import sys
-from tkinter import Button, Label, Tk, Toplevel, filedialog, ttk
+from tkinter import PhotoImage, Tk, Toplevel, filedialog, ttk
 
 IMAGE_EXT = ['webp', 'PNG', 'HEIC', 'png', 'jpg', 'jpeg', 'gif',
              'bmp', 'ai', 'psd', 'tif', 'tiff', 'ico', 'svg', 'JPG']
@@ -65,11 +64,12 @@ class UltraSort():
             local_path = self.path
         else:
             return
+
         walk = list(os.walk(local_path))
 
-        for local_path, _, _ in walk[::-1]:
-            if len(os.listdir(local_path)) == 0:
-                os.rmdir(local_path)
+        for walk_path, _, _ in walk[::-1]:
+            if len(os.listdir(walk_path)) == 0:
+                os.rmdir(walk_path)
         msgWorkDone()
 
     def sortFileByExtension(self) -> None:
@@ -159,9 +159,6 @@ class UltraSort():
             # avoids desktop.ini file because it's requires administrator rights to move it
             if name != "desktop" and ext != "ini":
 
-                # This forces the next iteration,
-                # if it is the directory
-
                 # Moving files in subfolder
                 for type_item in TYPE_LIST:
                     subFolderType = TYPE_LIST_NAME[TYPE_LIST.index(type_item)]
@@ -171,7 +168,14 @@ class UltraSort():
         self.deleteEmptyFolders()
 
 
-def msgWorkDone():
+def msgWorkDone() -> None:
+    '''
+    Summons modal windows and locks root window
+
+    Return: 
+        None: Modal window
+
+    '''
     if ent.path == '':
         return
     global pop
@@ -183,14 +187,14 @@ def msgWorkDone():
     pop.grab_set()
 
     lblMsg = ttk.Label(pop,
-                   text="Work done!")
+                       text="Work done!")
     lblMsg.grid(row=0,
                 padx=10,
                 pady=(10, 0))
 
     btnMsg = ttk.Button(pop,
-                    text="OK",
-                    command=popDestroy)
+                        text="OK",
+                        command=popDestroy)
     btnMsg.grid(row=1,
                 padx=10,
                 pady=(10, 10))
@@ -201,32 +205,20 @@ def popDestroy():
     pop.destroy()
 
 
-def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
-
-
 if __name__ == "__main__":
 
     ent = UltraSort()
     root = Tk()
-    root.tk.call("source", resource_path("azure.tcl"))
+    root.tk.call("source", "azure.tcl")
     root.tk.call("set_theme", "light")
 
     # get the screen dimension
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
 
-    root.title("ULTRASORT")
+    root.title("UltraSort")
     root.resizable(False, False)
-    #root.iconphoto(True, PhotoImage(file=resource_path('icon.png')))
-    
+    root.iconbitmap(True, 'icon.ico')
 
     lblHint = ttk.Label(root,
                         text="Directory: None, select one.")
