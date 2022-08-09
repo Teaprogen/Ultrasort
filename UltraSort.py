@@ -1,15 +1,15 @@
 
 import os
 import shutil
-from tkinter import PhotoImage, Tk, Toplevel, filedialog, ttk
+from tkinter import Tk, Toplevel, filedialog, ttk
 
-IMAGE_EXT = ['webp', 'PNG', 'HEIC', 'png', 'jpg', 'jpeg', 'gif',
-             'bmp', 'ai', 'psd', 'tif', 'tiff', 'ico', 'svg', 'JPG']
+IMAGE_EXT = ['psd', 'webp', 'bmp', 'tif', 'jpg', 'ico', 'jpg',
+             'png', 'ai', 'tiff', 'png', 'jpeg', 'heic', 'svg', 'gif']
 
 VIDEO_EXT = ['mp4', 'webm', 'webm', 'mkv']
 
-DOCUMENT_EXT = ['DOCX', 'pps', 'mpp', 'xlsx', 'PDF', 'pdf', 'doc',
-                'docx', 'pptx', 'txt', 'ppt', 'odp', 'key', 'xls']
+DOCUMENT_EXT = ['doc', 'key', 'pdf', 'xlsx', 'pps', 'pptx',
+                'xls', 'docx', 'pdf', 'txt', 'docx', 'mpp', 'odp', 'ppt']
 
 AUDIO_EXT = ['mp3', 'wav', 'flac', 'aif',
              'cda', 'mid', 'mpa', 'ogg', 'wma', 'wpl']
@@ -48,7 +48,7 @@ class UltraSort():
         """Path selector.
 
         Returns:
-            None: Ask for directory, and set path.
+            None: Ask for directory, and sets path.
         """
         self.path = filedialog.askdirectory()
         if self.path != '':
@@ -98,23 +98,15 @@ class UltraSort():
 
             # This is going to store the extension type
             ext = ext[1:]
-
+            ext = ext.lower()
             # avoids desktop.ini file because it's requires administrator rights to move it
             if (name != "desktop" and ext != "ini") and (ext != 'lnk'):
 
-                # This forces the next iteration,
-                # if it is the directory
                 if ext == '':
                     continue
-
-                # This will move the file to the directory
-                # where the name 'ext' already exists
                 if os.path.exists(local_path + '/' + ext):
                     shutil.move(local_path + '/' + file_name,
                                 local_path + '/' + ext + '/' + file_name)
-
-                # This will create a new directory,
-                # if the directory does not already exist
                 else:
                     os.makedirs(local_path + '/' + ext)
                     shutil.move(local_path + '/' + file_name,
@@ -155,7 +147,7 @@ class UltraSort():
 
             # This is going to store the extension type
             ext = ext[1:]
-
+            ext = ext.lower()
             # avoids desktop.ini file because it's requires administrator rights to move it
             if name != "desktop" and ext != "ini":
 
@@ -200,7 +192,7 @@ def msgWorkDone() -> None:
                 pady=(10, 10))
 
 
-def popDestroy():
+def popDestroy() -> None:
     pop.grab_release()
     pop.destroy()
 
