@@ -41,7 +41,16 @@ class UltraSort():
         self.path = ''
 
     def __repr__(self) -> str:
-        return "<...some useful description...>"
+        return f"{self.path}"
+    
+    def __str__(self) -> str:
+        return f"Path: {self.path}"
+
+    def get_path(self):
+        return self.path
+
+    def set_path(self, newPath):
+        self.path = newPath
 
     def _flattenList(self, list_to_flatten: list) -> list:
         """funtion to to unpack list of lists in to single list
@@ -126,7 +135,6 @@ class UltraSort():
             msgWorkDone()
         else:
             msgError()
-            
 
 
 def msgWorkDone(text: str = "Work done!") -> None:
