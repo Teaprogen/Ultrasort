@@ -12,7 +12,7 @@ DOCUMENT_EXT = ['doc', 'key', 'pdf', 'xlsx', 'pps', 'pptx',
                 'xls', 'docx', 'pdf', 'txt', 'docx', 'mpp', 'odp', 'ppt']
 
 AUDIO_EXT = ['mp3', 'wav', 'flac', 'aif',
-             'cda', 'mid', 'mpa', 'ogg', 'wma', 'wpl']
+             'cda', 'mid', 'mpa', 'ogg', 'wma', 'wpl', 'mpeg']
 
 COMPRESSED_EXT = ['rar', 'tar', 'zip', '7z', 'pkg', 'z']
 
@@ -33,6 +33,8 @@ TYPE_LIST_NAME = ['Images', 'Videos', 'Documents',
                   'Audio', 'Archives', 'Fonts',
                   'Internet files', 'Data files', 'Executable files']
 
+# TODO msgError Fnction
+
 
 class UltraSort():
     def __init__(self) -> None:
@@ -42,16 +44,25 @@ class UltraSort():
         return "<...some useful description...>"
 
     def _flattenList(self, list_to_flatten: list) -> list:
+        """funtion to to unpack list of lists in to single list
+
+        Args:
+            list_to_flatten (list): list of lists to unpack
+
+        Returns:
+            list: list
+        """
+
         return [item for sublist in list_to_flatten for item in sublist]
 
     def getFolderPath(self) -> None:
         """Path selector.
 
         Returns:
-            None: Ask for directory, and sets path.
+            None: Ask for directory, and sets it to path.
         """
         self.path = filedialog.askdirectory()
-        if self.path != '':
+        if (os.path.isdir(self.path)):
             lblHint['text'] = ("Directory: " + str(ent.path))
 
     def deleteEmptyFolders(self) -> None:
@@ -60,58 +71,37 @@ class UltraSort():
         Returns:
             None: In path deletes all empty folders and in subfolders
         """
-        if self.path != '':
+        if (os.path.isdir(self.path)):
             local_path = self.path
-        else:
-            return
 
-        walk = list(os.walk(local_path))
+            walk = list(os.walk(local_path))
 
-        for walk_path, _, _ in walk[::-1]:
-            if len(os.listdir(walk_path)) == 0:
-                os.rmdir(walk_path)
-        msgWorkDone()
+            for walk_path, _, _ in walk[::-1]:
+                if len(os.listdir(walk_path)) == 0:
+                    os.rmdir(walk_path)
+            msgWorkDone()
 
     def sortFileByExtension(self) -> None:
         """Sorts files in path by extension type.
 
         Return:
-            None: In path sorts all files by extension and moves to according folders.
-            If no such folders exits, creates it.        
+            None: In the path, sorts all files by extension and moves them to the appropriate folders.
+            If there is no such folder, creates one.        
         """
-        if self.path != '':
-            local_path = self.path
+        if (os.path.isdir(self.path)):
+            localPath = self.path
+            listOfFiles = os.listdir(localPath)
+            for files in listOfFiles:
+                fileName, fileExtetion = os.path.splitext(files)
+                fileExtetion = fileExtetion[1:]
+                if fileExtetion in UltraSort._flattenList(self, TYPE_LIST):
+                    if not (os.path.isdir(f"{localPath}/{fileExtetion}")):
+                        os.mkdir(f"{localPath}/{fileExtetion}")
+                    shutil.move(f"{localPath}/{files}",
+                                f"{localPath}/{fileExtetion}")
+            msgWorkDone()
         else:
-            return
-        list_of_files = []
-        try:
-            list_of_files = os.listdir(local_path)
-        except OSError as error:
-            local_path = local_path[1:]
-            try:
-                list_of_files = os.listdir(local_path)
-            except OSError as error:
-                local_path = local_path[1:]
-
-        for file_name in list_of_files:
-            name, ext = os.path.splitext(file_name)
-
-            # This is going to store the extension type
-            ext = ext[1:]
-            ext = ext.lower()
-            # avoids desktop.ini file because it's requires administrator rights to move it
-            if (name != "desktop" and ext != "ini") and (ext != 'lnk'):
-
-                if ext == '':
-                    continue
-                if os.path.exists(local_path + '/' + ext):
-                    shutil.move(local_path + '/' + file_name,
-                                local_path + '/' + ext + '/' + file_name)
-                else:
-                    os.makedirs(local_path + '/' + ext)
-                    shutil.move(local_path + '/' + file_name,
-                                local_path + '/' + ext + '/' + file_name)
-        msgWorkDone()
+            msgError()
 
     def sortFilesByType(self) -> None:
         """Sorts files in path by general type.
@@ -120,47 +110,26 @@ class UltraSort():
             None: In path sorts all files by type and moves to according folders.
             If no such folders exits, creates it. 
         """
-        if self.path != '':
-            local_path = self.path
+        if (os.path.isdir(self.path)):
+            localPath = self.path
+            listOfFiles = os.listdir(localPath)
+            for types in TYPE_LIST:
+                types_name = TYPE_LIST_NAME[TYPE_LIST.index(types)]
+                for files in listOfFiles:
+                    fileName, fileExtetion = os.path.splitext(files)
+                    fileExtetion = fileExtetion[1:]
+                    if fileExtetion in types:
+                        if not (os.path.isdir(f"{localPath}/{types_name}")):
+                            os.mkdir(f"{localPath}/{types_name}")
+                        shutil.move(f"{localPath}/{files}",
+                                    f"{localPath}/{types_name}")
+            msgWorkDone()
         else:
-            return
-        list_of_files = ""
-
-        # Delete Windows invisible symbols
-        try:
-            list_of_files = os.listdir(local_path)
-        except OSError as error:
-            local_path = local_path[1:]
-            try:
-                list_of_files = os.listdir(local_path)
-            except OSError as error:
-                local_path = local_path[1:]
-
-        # Create folders to move files
-        for folderName in TYPE_LIST_NAME:
-            if not (os.path.exists(local_path + '/' + folderName)):
-                os.makedirs(local_path + '/' + folderName)
-
-        # Sorting files in folders
-        for file_name in list_of_files:
-            name, ext = os.path.splitext(file_name)
-
-            # This is going to store the extension type
-            ext = ext[1:]
-            ext = ext.lower()
-            # avoids desktop.ini file because it's requires administrator rights to move it
-            if name != "desktop" and ext != "ini":
-
-                # Moving files in subfolder
-                for type_item in TYPE_LIST:
-                    subFolderType = TYPE_LIST_NAME[TYPE_LIST.index(type_item)]
-                    if ext in type_item or (name in type_item and ext == ''):
-                        shutil.move(local_path + '/' + file_name,
-                                    local_path + '/' + subFolderType + '/' + file_name)
-        self.deleteEmptyFolders()
+            msgError()
+            
 
 
-def msgWorkDone() -> None:
+def msgWorkDone(text: str = "Work done!") -> None:
     '''
     Summons modal windows and locks root window
 
@@ -170,31 +139,34 @@ def msgWorkDone() -> None:
     '''
     if ent.path == '':
         return
-    global pop
     pop = Toplevel(root)
     pop.tk.call("set_theme", "light")
-    pop.title("Done!")
+    pop.title(text)
     pop.resizable(False, False)
     pop.grid_columnconfigure(0, weight=1)
     pop.grab_set()
 
     lblMsg = ttk.Label(pop,
-                       text="Work done!")
+                       text=text)
     lblMsg.grid(row=0,
                 padx=10,
                 pady=(10, 0))
 
     btnMsg = ttk.Button(pop,
                         text="OK",
-                        command=popDestroy)
+                        command=lambda: popDestroy(pop))
     btnMsg.grid(row=1,
                 padx=10,
                 pady=(10, 10))
 
 
-def popDestroy() -> None:
+def popDestroy(pop) -> None:
     pop.grab_release()
     pop.destroy()
+
+
+def msgError():
+    msgWorkDone("Erorr: Somthing goes wrong")
 
 
 if __name__ == "__main__":
